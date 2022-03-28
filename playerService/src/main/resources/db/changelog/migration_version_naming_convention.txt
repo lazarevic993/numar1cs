@@ -1,0 +1,8 @@
+Format "y.q.s.n":
+
+y. First number is current year
+q. Second number is current quarter and starts from 1
+s. Third number is current sprint and starts from 1
+n. Fourth number is number of change and starts from 1
+
+Example: 4.2.3.7-migration.sql
