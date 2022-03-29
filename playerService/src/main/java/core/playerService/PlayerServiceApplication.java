@@ -1,5 +1,6 @@
 package core.playerService;
 
+import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PlayerServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(PlayerServiceApplication.class, args);
+		SpringApplication app = new SpringApplication(PlayerServiceApplication.class);
+		app.setDefaultProperties(Collections.singletonMap("server.port", "2020"));
+		app.run(args);
 	}
 
 }
