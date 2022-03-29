@@ -1,4 +1,4 @@
-package exception;
+package core.playerService.exception;
 
 public class NotFoundException extends RuntimeException{
 

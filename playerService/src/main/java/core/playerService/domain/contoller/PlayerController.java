@@ -1,9 +1,11 @@
-package core.contoller;
+package core.playerService.domain.contoller;
 
-import static config.ApplicationUrls.REST_API_V1_PLAYER;
+import static core.playerService.config.ApplicationUrls.REST_API_V1_PLAYER;
 
-import core.model.PlayerDto;
-import core.service.PlayerService;
+import core.playerService.domain.dto.PlayerCreateDto;
+import core.playerService.domain.dto.PlayerDto;
+import core.playerService.domain.service.PlayerService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -19,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Api(tags = "player")
 @RequestMapping(value = REST_API_V1_PLAYER)
 public class PlayerController {
+
     private final PlayerService playerService;
 
     public PlayerController(PlayerService playerService) {
@@ -59,7 +63,7 @@ public class PlayerController {
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
     @GetMapping(value = "/{id}")
-    public ResponseEntity<PlayerDto> getAllPlayers(@PathVariable Long id)
+    public ResponseEntity<PlayerDto> getPlayer(@PathVariable Long id)
     {
 
         PlayerDto playerDto = playerService.getPlayerById(id);
@@ -79,9 +83,9 @@ public class PlayerController {
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
     @PostMapping
-    public ResponseEntity<HttpStatus> getAllPlayers(@RequestBody PlayerDto playerDto)
+    public ResponseEntity<HttpStatus> createPlayer(@RequestBody PlayerCreateDto playerCreateDto)
     {
-        playerService.createPlayer(playerDto);
+        playerService.createPlayer(playerCreateDto);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

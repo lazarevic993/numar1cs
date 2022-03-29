@@ -1,6 +1,6 @@
-package core.respository;
+package core.playerService.domain.respository;
 
-import core.model.Player;
+import core.playerService.domain.model.Player;
 import org.springframework.data.repository.CrudRepository;
 
 public interface PlayerRepository extends CrudRepository<Player, Long> {

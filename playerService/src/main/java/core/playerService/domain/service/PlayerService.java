@@ -1,13 +1,16 @@
-package core.service;
+package core.playerService.domain.service;
 
-import core.model.Player;
-import core.model.PlayerDto;
-import core.respository.PlayerRepository;
-import exception.NotFoundException;
+import core.playerService.domain.dto.PlayerCreateDto;
+import core.playerService.domain.model.Player;
+import core.playerService.domain.dto.PlayerDto;
+import core.playerService.domain.respository.PlayerRepository;
+import core.playerService.exception.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -40,11 +43,13 @@ public class PlayerService {
         return players.stream().map(PlayerDto::new).collect(Collectors.toList());
     }
 
-    public void createPlayer(PlayerDto playerDto) {
+    public void createPlayer(PlayerCreateDto playerCreateDto) {
 
         Player player = new Player();
-        player.setName(playerDto.getName());
-        player.setGameId(playerDto.getGameId());
+        player.setName(playerCreateDto.getName());
+        player.setGameId(playerCreateDto.getGameId());
+        player.setUsername(player.getUsername());
+        player.setPassword(passwordEncoder().encode(playerCreateDto.getPassword()));
 
         playerRepository.save(player);
 
@@ -58,5 +63,10 @@ public class PlayerService {
         playerRepository.delete(player);
 
         logger.debug("PlayerService: deletePlayerById successfully done");
+    }
+
+    private PasswordEncoder passwordEncoder()
+    {
+        return new BCryptPasswordEncoder();
     }
 }
