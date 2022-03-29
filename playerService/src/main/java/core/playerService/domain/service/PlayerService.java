@@ -62,8 +62,4 @@ public class PlayerService {
         logger.debug("PlayerService: deletePlayerById successfully done");
     }
 
-    private PasswordEncoder passwordEncoder()
-    {
-        return new BCryptPasswordEncoder();
-    }
 }
