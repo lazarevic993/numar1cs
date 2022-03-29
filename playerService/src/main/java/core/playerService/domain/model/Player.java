@@ -39,7 +39,4 @@ public class Player {
 
     @Column(name = "game_id")
     private Long gameId;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    List<UserAuthority> authorities = new ArrayList<>();
 }
