@@ -1,6 +1,5 @@
 package core.playerService.domain.service;
 
-import core.playerService.domain.dto.PlayerCreateDto;
 import core.playerService.domain.model.Player;
 import core.playerService.domain.dto.PlayerDto;
 import core.playerService.domain.respository.PlayerRepository;
@@ -43,13 +42,11 @@ public class PlayerService {
         return players.stream().map(PlayerDto::new).collect(Collectors.toList());
     }
 
-    public void createPlayer(PlayerCreateDto playerCreateDto) {
+    public void createPlayer(PlayerDto playerDto) {
 
         Player player = new Player();
-        player.setName(playerCreateDto.getName());
-        player.setGameId(playerCreateDto.getGameId());
-        player.setUsername(player.getUsername());
-        player.setPassword(passwordEncoder().encode(playerCreateDto.getPassword()));
+        player.setName(playerDto.getName());
+        player.setGameId(playerDto.getGameId());
 
         playerRepository.save(player);
 

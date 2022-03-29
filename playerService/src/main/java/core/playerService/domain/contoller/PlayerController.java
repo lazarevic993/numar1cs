@@ -2,7 +2,6 @@ package core.playerService.domain.contoller;
 
 import static core.playerService.config.ApplicationUrls.REST_API_V1_PLAYER;
 
-import core.playerService.domain.dto.PlayerCreateDto;
 import core.playerService.domain.dto.PlayerDto;
 import core.playerService.domain.service.PlayerService;
 import io.swagger.annotations.Api;
@@ -83,9 +82,9 @@ public class PlayerController {
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
     @PostMapping
-    public ResponseEntity<HttpStatus> createPlayer(@RequestBody PlayerCreateDto playerCreateDto)
+    public ResponseEntity<HttpStatus> createPlayer(@RequestBody PlayerDto playerDto)
     {
-        playerService.createPlayer(playerCreateDto);
+        playerService.createPlayer(playerDto);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
