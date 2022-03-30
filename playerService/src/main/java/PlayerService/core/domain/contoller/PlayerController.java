@@ -1,9 +1,9 @@
-package core.playerService.domain.contoller;
+package PlayerService.core.domain.contoller;
 
-import static core.playerService.config.ApplicationUrls.REST_API_V1_PLAYER;
+import static PlayerService.core.config.ApplicationUrls.REST_API_V1_PLAYER;
 
-import core.playerService.domain.dto.PlayerDto;
-import core.playerService.domain.service.PlayerService;
+import PlayerService.core.domain.dto.PlayerDto;
+import PlayerService.core.domain.service.PlayerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -67,7 +67,8 @@ public class PlayerController {
 
         PlayerDto playerDto = playerService.getPlayerById(id);
 
-        return new ResponseEntity<>(playerDto, HttpStatus.OK);
+        return playerDto == null ?
+                new ResponseEntity<>(null, HttpStatus.NOT_FOUND) : new ResponseEntity<>(playerDto, HttpStatus.OK);
     }
 
     @ApiOperation(
@@ -103,10 +104,7 @@ public class PlayerController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<HttpStatus> deletePlayerById(@PathVariable Long id)
     {
-
-        playerService.deletePlayerById(id);
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<HttpStatus>(playerService.deletePlayerById(id));
     }
 
 

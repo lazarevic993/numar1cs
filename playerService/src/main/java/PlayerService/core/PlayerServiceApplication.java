@@ -1,4 +1,4 @@
-package core.playerService;
+package PlayerService.core;
 
 import java.util.Collections;
 import org.springframework.boot.SpringApplication;
@@ -12,5 +12,4 @@ public class PlayerServiceApplication {
 		app.setDefaultProperties(Collections.singletonMap("server.port", "2020"));
 		app.run(args);
 	}
-
 }

@@ -1,4 +1,4 @@
-package core.playerService.config;
+package PlayerService.core.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

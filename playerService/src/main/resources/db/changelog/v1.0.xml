@@ -4,19 +4,14 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet author="stefan.lazarevic" id="1.0.0">
-        <sql>CREATE TYPE game_status AS ENUM ('NEW','FINISHED', 'DROPED')</sql>
-        <createTable tableName="game">
+        <createTable tableName="player">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="status" type="game_status">
-                <constraints nullable="false"/>
-            </column>
-            <column name="created_at" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
-            <column name="updated_at" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+            <column name="game_id" type="BIGINT"/>
         </createTable>
     </changeSet>
 

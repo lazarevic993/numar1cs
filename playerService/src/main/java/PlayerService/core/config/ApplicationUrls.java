@@ -1,4 +1,4 @@
-package core.playerService.config;
+package PlayerService.core.config;
 
 
 /**

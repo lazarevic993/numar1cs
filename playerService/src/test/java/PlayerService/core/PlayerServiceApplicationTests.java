@@ -1,4 +1,4 @@
-package core.playerService;
+package PlayerService.core;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

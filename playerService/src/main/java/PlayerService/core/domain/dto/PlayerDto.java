@@ -1,6 +1,6 @@
-package core.playerService.domain.dto;
+package PlayerService.core.domain.dto;
 
-import core.playerService.domain.model.Player;
+import PlayerService.core.domain.model.Player;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
