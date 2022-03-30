@@ -51,11 +51,14 @@ public class PlayerService {
         player.setName(playerDto.getName());
         player.setGameId(getGameIdToSet(playerDto));
 
-        Player playersWithSameName = playerRepository.findDistinctByName(playerDto.getName());
-
-        if(player.getGameId()==0 && playersWithSameName!=null)
+        if(player.getGameId()==0)
         {
-            return HttpStatus.BAD_REQUEST;
+            Player playersWithSameName = playerRepository.findDistinctByName(playerDto.getName());
+
+            if(playersWithSameName!=null)
+            {
+                return HttpStatus.BAD_REQUEST;
+            }
         }
 
         playerRepository.save(player);
@@ -109,6 +112,25 @@ public class PlayerService {
         }
         else {
            return isGameExist(playerDto.getGameId()) ? playerDto.getGameId() : 0L;
+        }
+    }
+
+    public HttpStatus registerPlayer(PlayerDto playerDto) {
+
+        List<Player> players = playerRepository.findByName(playerDto.getName());
+        List<PlayerDto> playerDtos = players.stream().map(PlayerDto::new).collect(Collectors.toList());
+
+        if(playerDtos.contains(playerDto)){
+            return HttpStatus.NOT_MODIFIED;
+        }
+        else {
+            Player player = new Player();
+            player.setGameId(playerDto.getGameId());
+            player.setName(playerDto.getName());
+
+            playerRepository.save(player);
+
+            return HttpStatus.CREATED;
         }
     }
 }

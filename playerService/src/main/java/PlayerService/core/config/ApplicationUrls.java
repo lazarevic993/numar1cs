@@ -18,8 +18,6 @@ public interface ApplicationUrls {
     String port = "8080";
     String BASE_URL = "http://localhost:";
     String API_VERSION = "/api/v1/";
-    String ADDRESS = BASE_URL + port + API_VERSION;
-
-
+    String GAME_SERVICE_ADDRESS = BASE_URL + port + API_VERSION;
 
 }

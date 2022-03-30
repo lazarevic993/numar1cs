@@ -2,7 +2,9 @@ package GameService.core.domein.controller;
 
 import static GameService.core.config.ApplicationUrls.REST_API_V1_GAME;
 
+import GameService.core.domein.dto.GameCreateDto;
 import GameService.core.domein.dto.GameDto;
+import GameService.core.domein.model.GameStatus;
 import GameService.core.domein.service.GameService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -84,7 +87,7 @@ public class GameController {
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this game info", response = Error.class)
     })
     @PostMapping
-    public ResponseEntity<HttpStatus> createGame(@RequestBody GameDto gameDto)
+    public ResponseEntity<HttpStatus> createGame(@RequestBody GameCreateDto gameDto)
     {
         gameService.createGame(gameDto);
 

@@ -1,6 +1,6 @@
-package PlayerService.core.util;
+package GameService.core.util;
 
-import static PlayerService.core.config.ApplicationUrls.GAME_SERVICE_ADDRESS;
+import static GameService.core.config.ApplicationUrls.GAME_SERVICE_ADDRESS;
 
 public class CommunicationUtil {
 

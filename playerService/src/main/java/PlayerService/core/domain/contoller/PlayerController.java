@@ -105,5 +105,23 @@ public class PlayerController {
         return new ResponseEntity<HttpStatus>(playerService.deletePlayerById(id));
     }
 
+    @ApiOperation(
+            value = "Register game and player if it is necessary.",
+            notes = "Register game and player if it is necessary.",
+            tags = {"player"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Registration done", response = PlayerDto.class),
+            @ApiResponse(code = 500, message = "Unexpected error", response = Error.class),
+            @ApiResponse(code = 400, message = "Invalid input", response = Error.class),
+            @ApiResponse(code = 401, message = "You are not authorized to assign this player info", response = Error.class),
+            @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
+    })
+    @PostMapping(value = "/registration")
+    public ResponseEntity<HttpStatus> registerPlayer(@RequestBody PlayerDto playerCreateDto)
+    {
+        return new ResponseEntity<HttpStatus>(playerService.registerPlayer(playerCreateDto));
+    }
+
+
 
 }

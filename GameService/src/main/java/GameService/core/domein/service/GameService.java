@@ -1,15 +1,22 @@
 package GameService.core.domein.service;
 
+import GameService.core.domein.dto.GameCreateDto;
 import GameService.core.domein.dto.GameDto;
+import GameService.core.domein.dto.GameRegistrationDto;
 import GameService.core.domein.model.Game;
 import GameService.core.domein.model.GameStatus;
 import GameService.core.domein.repository.GameRepository;
+import GameService.core.util.CommunicationUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class GameService {
@@ -50,15 +57,34 @@ public class GameService {
 
     }
 
-    public void createGame(GameDto gameCreateDto) {
+    public void createGame(GameCreateDto gameCreateDto) {
 
         Game game = new Game();
         game.setName(gameCreateDto.getName());
         game.setStatus(GameStatus.NEW);
+        Game newGame = gameRepository.save(game);
+
+        playerRegistration(gameCreateDto.getPlayerName(), newGame.getId());
 
         logger.debug("GameService: createGame successfully done");
 
         gameRepository.save(game);
+    }
+
+    private void playerRegistration(String playerName, Long gameId) {
+
+        GameRegistrationDto gameRegistrationDto = new GameRegistrationDto();
+        gameRegistrationDto.setGameId(gameId);
+        gameRegistrationDto.setName(playerName);
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<GameRegistrationDto> entity = new HttpEntity<GameRegistrationDto>(gameRegistrationDto, headers);
+
+
+
+        logger.debug("GameService: playerRegistration successfully sent request");
+        restTemplate.exchange(CommunicationUtil.createURLWithPort("player/registration" ), HttpMethod.POST, entity, Void.class);
     }
 
     public HttpStatus deleteGameById(Long id) {
