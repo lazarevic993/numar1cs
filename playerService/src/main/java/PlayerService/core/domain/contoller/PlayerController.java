@@ -9,6 +9,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
+import org.hibernate.annotations.ParamDef;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,7 +45,7 @@ public class PlayerController {
             @ApiResponse(code = 401, message = "You are not authorized to assign this player info", response = Error.class),
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
-    @GetMapping
+    @GetMapping(value = "/all")
     public ResponseEntity<List<PlayerDto>> getAllPlayers()
     {
         List<PlayerDto> playerDtos =  playerService.getAllPlayers();
@@ -61,14 +64,11 @@ public class PlayerController {
             @ApiResponse(code = 401, message = "You are not authorized to assign this player info", response = Error.class),
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<PlayerDto> getPlayer(@PathVariable Long id)
+    @GetMapping
+    public ResponseEntity<List<PlayerDto>> getPlayer(@RequestParam  String name)
     {
 
-        PlayerDto playerDto = playerService.getPlayerById(id);
-
-        return playerDto == null ?
-                new ResponseEntity<>(null, HttpStatus.NOT_FOUND) : new ResponseEntity<>(playerDto, HttpStatus.OK);
+        return new ResponseEntity<>(playerService.getPlayerByName(name), HttpStatus.OK);
     }
 
     @ApiOperation(
@@ -83,11 +83,9 @@ public class PlayerController {
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
     @PostMapping
-    public ResponseEntity<HttpStatus> createPlayer(@RequestBody PlayerDto playerDto)
+    public ResponseEntity<HttpStatus> createPlayer(@RequestBody PlayerDto playerCreateDto)
     {
-        playerService.createPlayer(playerDto);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<HttpStatus>(playerService.createPlayer(playerCreateDto));
     }
 
     @ApiOperation(

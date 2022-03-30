@@ -1,18 +1,23 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
 
     <changeSet author="stefan.lazarevic" id="1.0.0">
         <createTable tableName="player">
             <column name="id" type="BIGINT" autoIncrement="true">
-                <constraints nullable="false" primaryKey="true"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_id_player"/>
             </column>
             <column name="name" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" />
             </column>
             <column name="game_id" type="BIGINT"/>
         </createTable>
+        <addUniqueConstraint
+                columnNames="name, game_id"
+                constraintName="pk_player"
+                tableName="player"
+        />
     </changeSet>
 
 </databaseChangeLog>

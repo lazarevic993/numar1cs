@@ -3,12 +3,19 @@ package PlayerService.core.domain.service;
 import PlayerService.core.domain.dto.PlayerDto;
 import PlayerService.core.domain.model.Player;
 import PlayerService.core.domain.respository.PlayerRepository;
+import PlayerService.core.util.CommunicationUtil;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class PlayerService {
@@ -22,21 +29,11 @@ public class PlayerService {
         this.playerRepository = playerRepository;
     }
 
-    public PlayerDto getPlayerById(Long id) {
+    public List<PlayerDto> getPlayerByName(String name) {
 
-        Player player = null;
+        List<Player>  players = playerRepository.findByName(name);
 
-        if(playerRepository.findById(id).isPresent())
-        {
-            player = playerRepository.findById(id).get();
-            logger.debug("PlayerService: getPlayerById successfully done");
-            return new PlayerDto(player);
-        }
-        else
-        {
-            logger.debug("GameService: getGameById, game with id {} dose not exist", id);
-            return null;
-        }
+        return players.stream().map(PlayerDto::new).collect(Collectors.toList());
     }
 
     public List<PlayerDto> getAllPlayers() {
@@ -48,15 +45,24 @@ public class PlayerService {
         return players.stream().map(PlayerDto::new).collect(Collectors.toList());
     }
 
-    public void createPlayer(PlayerDto playerDto) {
+    public HttpStatus createPlayer(PlayerDto playerDto) {
 
         Player player = new Player();
         player.setName(playerDto.getName());
-        player.setGameId(playerDto.getGameId());
+        player.setGameId(getGameIdToSet(playerDto));
+
+        Player playersWithSameName = playerRepository.findDistinctByName(playerDto.getName());
+
+        if(player.getGameId()==0 && playersWithSameName!=null)
+        {
+            return HttpStatus.BAD_REQUEST;
+        }
 
         playerRepository.save(player);
 
         logger.debug("PlayerService: createPlayer successfully done");
+
+        return HttpStatus.CREATED;
     }
 
     public HttpStatus deletePlayerById(Long id) {
@@ -78,4 +84,31 @@ public class PlayerService {
         }
     }
 
+    public boolean isGameExist(Long gameId)
+    {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Void> entity = new HttpEntity<Void>(null, headers);
+
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(CommunicationUtil.createURLWithPort("game/" + gameId), HttpMethod.GET, entity, Void.class);
+
+            return response.getStatusCodeValue() == 200;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    private Long getGameIdToSet(PlayerDto playerDto)
+    {
+        if(playerDto.getGameId()==null)
+        {
+            return 0L;
+        }
+        else {
+           return isGameExist(playerDto.getGameId()) ? playerDto.getGameId() : 0L;
+        }
+    }
 }

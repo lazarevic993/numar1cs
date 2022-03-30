@@ -13,4 +13,13 @@ public interface ApplicationUrls {
     //core management
     String REST_API_V1_PLAYER = REST_API_V1_BASE_URI + "/player";
 
+
+    //GameService
+    String port = "8080";
+    String BASE_URL = "http://localhost:";
+    String API_VERSION = "/api/v1/";
+    String ADDRESS = BASE_URL + port + API_VERSION;
+
+
+
 }
