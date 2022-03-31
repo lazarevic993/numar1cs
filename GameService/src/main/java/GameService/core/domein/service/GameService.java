@@ -7,14 +7,19 @@ import GameService.core.domein.model.Game;
 import GameService.core.domein.model.GameStatus;
 import GameService.core.domein.repository.GameRepository;
 import GameService.core.util.CommunicationUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -41,7 +46,7 @@ public class GameService {
 
     public GameDto getGameById(Long id) {
 
-        Game game = null;
+        Game game;
 
         if(gameRepository.findById(id).isPresent())
         {
@@ -89,7 +94,7 @@ public class GameService {
 
     public HttpStatus deleteGameById(Long id) {
 
-        Game game = null;
+        Game game;
 
         if(gameRepository.findById(id).isPresent())
         {
@@ -108,7 +113,7 @@ public class GameService {
 
     public GameDto updateGame(Long id, GameDto gameDto) {
 
-        Game game = null;
+        Game game;
 
         if(gameRepository.findById(id).isPresent())
         {
@@ -127,5 +132,82 @@ public class GameService {
             return null;
         }
 
+    }
+
+    public List<GameDto> getGamesFiltered(String gameName, String stringStatus, String playerName) {
+
+        GameStatus status;
+        List<Long> gameIds = new ArrayList<>();
+        List<Game> gameDtos;
+
+        status = checkGameStatusValue(stringStatus);
+
+        if(!playerName.isEmpty()){
+            gameIds = getGameIdsByPlayerName(playerName);
+        }
+
+        gameDtos = findIntersectionGameNameGameStatus(gameName, status);
+
+        if(!gameIds.isEmpty())
+        {
+            gameDtos = findIntersectionGameIdGameNameGameStatus(gameIds, gameDtos);
+        }
+
+        return gameDtos.stream().map(GameDto::new).collect(Collectors.toList());
+    }
+
+    private List<Game> findIntersectionGameNameGameStatus(String gameName, GameStatus status) {
+        if(!gameName.isEmpty()){
+            if(status!=null){
+                return gameRepository.findAllByNameAndStatus(gameName, status);
+            }
+            else {
+                return gameRepository.findAllByName(gameName);
+            }
+        }
+        else {
+            if(status!=null){
+                return gameRepository.findAllByStatus(status);
+            }
+            else {
+                return  (List<Game>) gameRepository.findAll();
+            }
+        }
+    }
+
+    private List<Game> findIntersectionGameIdGameNameGameStatus(List<Long> listIds, List<Game> gameDtoList){
+
+        List<Long> gameIds = gameDtoList.stream().map(Game::getId).collect(Collectors.toList());
+        List<Long> resultIds = gameIds.stream().distinct().filter(listIds::contains).collect(Collectors.toList());
+
+        return gameDtoList.stream().filter(listElement -> resultIds.contains(listElement.getId())).collect(
+                Collectors.toList());
+    }
+
+    private GameStatus checkGameStatusValue(String stringStatus)
+    {
+        if(!stringStatus.isEmpty()){
+            return GameStatus.valueOf(stringStatus);
+        }
+        else{
+            return null;
+        }
+    }
+
+    private List<Long> getGameIdsByPlayerName(String playerName) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Void> entity = new HttpEntity<Void>(null, headers);
+        Map<String, String> params = new HashMap<>();
+        params.put("name", playerName);
+
+        ParameterizedTypeReference<List<Long>> responseList = new ParameterizedTypeReference<List<Long>>() {};
+
+        logger.debug("GameService: getGameIdsByPlayerName successfully sent request");
+
+        ResponseEntity<List<Long>> response = restTemplate.exchange(CommunicationUtil.createURLWithPort("player/gameIds?name={name}"), HttpMethod.GET, entity, responseList, playerName);
+
+        return response.getBody();
     }
 }

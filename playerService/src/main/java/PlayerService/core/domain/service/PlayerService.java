@@ -4,7 +4,6 @@ import PlayerService.core.domain.dto.PlayerDto;
 import PlayerService.core.domain.model.Player;
 import PlayerService.core.domain.respository.PlayerRepository;
 import PlayerService.core.util.CommunicationUtil;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -70,7 +69,7 @@ public class PlayerService {
 
     public HttpStatus deletePlayerById(Long id) {
 
-        Player player = null;
+        Player player;
 
         if(playerRepository.findById(id).isPresent())
         {
@@ -132,5 +131,12 @@ public class PlayerService {
 
             return HttpStatus.CREATED;
         }
+    }
+
+    public List<Long> getGameIdsByPlayerName(String name) {
+
+        List<Player> players = playerRepository.findByName(name);
+
+        return players.stream().map(Player::getId).collect(Collectors.toList());
     }
 }

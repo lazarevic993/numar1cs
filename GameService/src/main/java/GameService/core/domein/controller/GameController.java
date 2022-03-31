@@ -131,4 +131,24 @@ public class GameController {
         return updatedGameDto == null ?
                 new ResponseEntity<>(null, HttpStatus.NOT_FOUND) : new ResponseEntity<>(updatedGameDto, HttpStatus.OK);
     }
+
+
+    @ApiOperation(
+            value = "Get game filtered by game name, status and player name.",
+            notes = "Return games.",
+            tags = {"game"})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Games retrieved", response = GameDto.class),
+            @ApiResponse(code = 500, message = "Unexpected error", response = Error.class),
+            @ApiResponse(code = 400, message = "Invalid input", response = Error.class),
+            @ApiResponse(code = 401, message = "You are not authorized to assign this game info", response = Error.class),
+            @ApiResponse(code = 403, message = "You do not have right permissions to assign this game info", response = Error.class)
+    })
+    @GetMapping(value = "/filter")
+    public ResponseEntity<List<GameDto>> getGameByFilter(@RequestParam String gameName, @RequestParam String status, @RequestParam String playerName) {
+
+        List<GameDto> gameDtos = gameService.getGamesFiltered(gameName, status, playerName);
+
+        return new ResponseEntity<>(gameDtos, HttpStatus.OK);
+    }
 }
