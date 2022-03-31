@@ -1,7 +1,5 @@
-<!-- Jukebox -->
-## NUMAE1CS
-
-
+<!-- NUMAR1CS -->
+## NUMAR1CS
 
 <!-- TABLE OF CONTENTS -->
 <details open="open">
@@ -20,7 +18,6 @@
       </ul>
     </li>
     <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 </details>
 
@@ -54,13 +51,13 @@ To get a local copy up and running follow these simple steps.
    ```sh
    git clone https://github.com/lazarevic993/numar1cs.git
    ```
-2. Install gradle 
+2. Install gradle and gradle packages for PlayerService
    ```sh
       cd PlayerService/
       gradle install
       gradle build
    ```
-2. Install gradle packages
+2. Install gradle and gradle packages for GameService
    ```sh
       cd GameService/
       gradle install
@@ -71,16 +68,6 @@ To get a local copy up and running follow these simple steps.
 ## Contact
 
 Stefan Lazarevic -  lazarevic993@gamil.com
-
-<!-- ACKNOWLEDGEMENTS -->
-## Acknowledgements
-
-* []()
-* []()
-* []()
-
-
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
