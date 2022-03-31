@@ -7,12 +7,10 @@ import GameService.core.domein.model.Game;
 import GameService.core.domein.model.GameStatus;
 import GameService.core.domein.repository.GameRepository;
 import GameService.core.util.CommunicationUtil;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import liquibase.pro.packaged.E;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -230,8 +228,6 @@ public class GameService {
 
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<Void>(null, headers);
-        Map<String, String> params = new HashMap<>();
-        params.put("name", playerName);
 
         ParameterizedTypeReference<List<Long>> responseList = new ParameterizedTypeReference<List<Long>>() {};
 

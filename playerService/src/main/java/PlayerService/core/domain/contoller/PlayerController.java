@@ -9,8 +9,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import java.util.List;
-import org.hibernate.annotations.ParamDef;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,8 +52,8 @@ public class PlayerController {
     }
 
     @ApiOperation(
-            value = "Get player by id.",
-            notes = "Return player.",
+            value = "Get player by name.",
+            notes = "Return players.",
             tags = {"player"})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Player retrieved", response = PlayerDto.class),
@@ -65,7 +63,7 @@ public class PlayerController {
             @ApiResponse(code = 403, message = "You do not have right permissions to assign this player info", response = Error.class)
     })
     @GetMapping
-    public ResponseEntity<List<PlayerDto>> getPlayer(@RequestParam  String name)
+    public ResponseEntity<List<PlayerDto>> getPlayerByNAme(@RequestParam  String name)
     {
 
         return new ResponseEntity<>(playerService.getPlayerByName(name), HttpStatus.OK);
