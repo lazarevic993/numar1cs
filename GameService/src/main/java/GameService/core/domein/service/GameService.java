@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import liquibase.pro.packaged.E;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -26,13 +27,16 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class GameService {
 
+    private final RestTemplate restTemplate;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     private final GameRepository gameRepository;
 
-    public GameService(GameRepository gameRepository) {
+    public GameService(GameRepository gameRepository, RestTemplate restTemplate) {
 
         this.gameRepository = gameRepository;
+        this.restTemplate = restTemplate;
     }
 
     public List<GameDto> getAllGames() {
@@ -62,35 +66,59 @@ public class GameService {
 
     }
 
-    public void createGame(GameCreateDto gameCreateDto) {
+    public HttpStatus createGame(GameCreateDto gameCreateDto) {
 
         Game game = new Game();
         game.setName(gameCreateDto.getName());
         game.setStatus(GameStatus.NEW);
         Game newGame = gameRepository.save(game);
 
-        playerRegistration(gameCreateDto.getPlayerName(), newGame.getId());
+        boolean done = playerRegistration(gameCreateDto.getPlayerName(), newGame.getId());
 
-        logger.debug("GameService: createGame successfully done");
+        if(done){
+            logger.debug("GameService: createGame successfully done");
 
-        gameRepository.save(game);
+            return HttpStatus.CREATED;
+        }
+
+        gameRepository.delete(newGame);
+
+        logger.debug("GameService: not created game maybe player's name does not exist or communication problems");
+
+        return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    private void playerRegistration(String playerName, Long gameId) {
+    private boolean playerRegistration(String playerName, Long gameId) {
 
         GameRegistrationDto gameRegistrationDto = new GameRegistrationDto();
         gameRegistrationDto.setGameId(gameId);
         gameRegistrationDto.setName(playerName);
 
-        RestTemplate restTemplate = new RestTemplate();
+
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<GameRegistrationDto> entity = new HttpEntity<GameRegistrationDto>(gameRegistrationDto, headers);
 
 
 
         logger.debug("GameService: playerRegistration successfully sent request");
-        restTemplate.exchange(CommunicationUtil.createURLWithPort("player/registration" ), HttpMethod.POST, entity, Void.class);
+
+        try {
+            ResponseEntity<Void> response =  restTemplate.exchange(CommunicationUtil.createURLWithPort("player/registration" ), HttpMethod.POST, entity, Void.class);
+
+            logger.debug("GameService: playerRegistration successfully done");
+
+            return true;
+        }
+        catch (Exception e){
+
+            logger.debug("GameService: playerRegistration problem with PlayerService");
+            logger.debug(e.getMessage());
+
+            return false;
+        }
+
     }
+
 
     public HttpStatus deleteGameById(Long id) {
 
@@ -137,7 +165,7 @@ public class GameService {
     public List<GameDto> getGamesFiltered(String gameName, String stringStatus, String playerName) {
 
         GameStatus status;
-        List<Long> gameIds = new ArrayList<>();
+        List<Long> gameIds = null;
         List<Game> gameDtos;
 
         status = checkGameStatusValue(stringStatus);
@@ -148,7 +176,7 @@ public class GameService {
 
         gameDtos = findIntersectionGameNameGameStatus(gameName, status);
 
-        if(!gameIds.isEmpty())
+        if(gameIds!=null)
         {
             gameDtos = findIntersectionGameIdGameNameGameStatus(gameIds, gameDtos);
         }
@@ -186,17 +214,20 @@ public class GameService {
 
     private GameStatus checkGameStatusValue(String stringStatus)
     {
-        if(!stringStatus.isEmpty()){
+
+        try{
             return GameStatus.valueOf(stringStatus);
         }
-        else{
+        catch (Exception e)
+        {
+            logger.debug("GameService: checkGameStatusValue not good enum value");
+
             return null;
         }
     }
 
     private List<Long> getGameIdsByPlayerName(String playerName) {
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<Void>(null, headers);
         Map<String, String> params = new HashMap<>();
@@ -206,8 +237,13 @@ public class GameService {
 
         logger.debug("GameService: getGameIdsByPlayerName successfully sent request");
 
-        ResponseEntity<List<Long>> response = restTemplate.exchange(CommunicationUtil.createURLWithPort("player/gameIds?name={name}"), HttpMethod.GET, entity, responseList, playerName);
+        try {
+            ResponseEntity<List<Long>> response = restTemplate.exchange(CommunicationUtil.createURLWithPort("player/gameIds?name={name}"), HttpMethod.GET, entity, responseList, playerName);
 
-        return response.getBody();
+            return response.getBody();
+        }
+        catch (Exception e){
+            return null;
+        }
     }
 }

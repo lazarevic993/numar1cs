@@ -4,7 +4,6 @@ import static GameService.core.config.ApplicationUrls.REST_API_V1_GAME;
 
 import GameService.core.domein.dto.GameCreateDto;
 import GameService.core.domein.dto.GameDto;
-import GameService.core.domein.model.GameStatus;
 import GameService.core.domein.service.GameService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,9 +88,7 @@ public class GameController {
     @PostMapping
     public ResponseEntity<HttpStatus> createGame(@RequestBody GameCreateDto gameDto)
     {
-        gameService.createGame(gameDto);
-
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(gameService.createGame(gameDto));
     }
 
     @ApiOperation(

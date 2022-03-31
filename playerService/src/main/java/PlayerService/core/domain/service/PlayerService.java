@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,8 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class PlayerService {
 
+    private final RestTemplate restTemplate;
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass().getName());
 
     private final PlayerRepository playerRepository;
@@ -26,6 +29,7 @@ public class PlayerService {
     public PlayerService(PlayerRepository playerRepository) {
 
         this.playerRepository = playerRepository;
+        this.restTemplate = new RestTemplate();
     }
 
     public List<PlayerDto> getPlayerByName(String name) {
@@ -88,7 +92,6 @@ public class PlayerService {
 
     public boolean isGameExist(Long gameId)
     {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Void> entity = new HttpEntity<Void>(null, headers);
 
@@ -137,6 +140,6 @@ public class PlayerService {
 
         List<Player> players = playerRepository.findByName(name);
 
-        return players.stream().map(Player::getId).collect(Collectors.toList());
+        return players.stream().map(Player::getGameId).collect(Collectors.toList());
     }
 }
